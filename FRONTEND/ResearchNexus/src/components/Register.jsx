@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { registerSupervisor, registerStudent } from '../services/api';
-import './Register.css';
+import '../styles/Register.css';
 
 function Register({ onBackToLogin }) {
     const [userType, setUserType] = useState('student');
