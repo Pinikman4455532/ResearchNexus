@@ -32,13 +32,15 @@ exports.login = async (req, res) => {
 // Register Supervisor
 exports.registerSupervisor = async (req, res) => {
   try {
-    const { Name, Interest, Gmail, groups } = req.body;
+    const { Name, Interest, Gmail, groups, phone, address} = req.body;
     
     const newSupervisor = new Supervisor({
       Name,
       Interest,
       Gmail,
-      groups
+      groups,
+      phone,
+      address
     });
 
     await newSupervisor.save();
@@ -51,13 +53,16 @@ exports.registerSupervisor = async (req, res) => {
 // Register Student
 exports.registerStudent = async (req, res) => {
   try {
-    const { Name, SuperVisor, Gmail, Group_id } = req.body;
+    const { Name, SuperVisor, Gmail, Group_id ,studentId, phone, address} = req.body;
     
     const newStudent = new Student({
       Name,
       SuperVisor,
       Gmail,
-      Group_id
+      Group_id,
+      studentId,
+      phone,
+      address
     });
 
     await newStudent.save();

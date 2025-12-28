@@ -1,0 +1,160 @@
+/* MAIN CONTAINER */
+.dashboard-container {
+    width: 100vw; 
+    background: #385992;
+    min-height: 100vh;
+    color: white;
+    font-family: "Georgia", serif;
+}
+
+/* TOP HEADER */
+.top-header {
+    
+  display: flex;
+  justify-content: space-between;
+  padding: 30px;
+  background: #587596;
+  height: 170px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.left-section h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin: 0;
+  font-family: "Georgia", serif;
+}
+
+.left-section h2 {
+    color: #ffffff;
+  font-size: 28px;
+  margin: 10px 0;
+  font-weight: 600;
+  font-family: "Georgia", serif;
+}
+
+.left-section p {
+    color: #ffffff;
+  margin-top: 10px;
+  font-size: 14px;
+  font-family: "Georgia", serif;
+}
+
+.brain-img {
+  width: 250px;
+  height: 250px;
+  margin-right: 0px;
+  margin-left: 120px;
+  margin-top: -50px;
+}
+
+/* NAVIGATION BAR */
+.dashboard-nav {
+    
+    
+  background: transparent;
+  padding: 10px;
+  text-align: right;
+  margin-right: 40px;
+  
+}
+
+.dashboard-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  justify-content: flex-end;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: "Georgia", serif;
+}
+
+.dashboard-nav ul li:hover {
+  text-decoration: underline;
+}
+.dashboard-nav ul li a {
+  color: white;            /* Change to any color you want */
+  text-decoration: none;   /* Remove underline */
+  font-family: "Georgia", serif;
+}
+
+.dashboard-nav ul li a:hover {
+  color: #000000;          /* Hover color */
+  text-decoration: underline;
+}
+
+
+/* DEADLINE SECTION */
+.deadline-section {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 40px;
+  align-items: center;
+  gap: 8px;
+}
+
+.deadline-btn {
+  background: #e0e0e0;
+  color: #000;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: "Georgia", serif;
+}
+
+.bell-icon {
+  font-size: 18px;
+}
+
+/* FEATURE SECTION */
+.feature-section {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-top: 50px;
+}
+
+.feature-card {
+  width: 270px;
+  background: #A9B9D4;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  color: black;
+  font-family: "Georgia", serif;
+}
+
+.feature-card .icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.feature-card h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.feature-card p {
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+/* FOOTER */
+.dashboard-footer {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 80px;
+  padding: 20px;
+  color: #dcdcdc;
+  font-size: 14px;
+  font-family: "Georgia", serif;
+}
+
+.dashboard-footer p:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}

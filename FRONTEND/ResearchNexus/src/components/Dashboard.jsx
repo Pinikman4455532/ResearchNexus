@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import {
   createFolder,
   getFolders,
@@ -17,36 +19,74 @@ import {
   sendWorkForPreview,
   getProfessorPreviews,
   giveFeedback,
-  getStudentFeedback
+  getStudentFeedback,
 } from '../services/api';
 import '../styles/Dashboard.css';
 
-function Dashboard({ user, userType, onLogout }) {
-  // Existing state
+// Favorites component
+function Favorites({ files, favorites, toggleFavorite }) {
+  const favoriteFiles = files.filter((file) => favorites.includes(file.id));
+  if (favoriteFiles.length === 0) return <p>No favorite files</p>;
+
+  return (
+    <div className="favorites-section">
+      <h3>⭐ Favorites</h3>
+      <div className="files-grid">
+        {favoriteFiles.map((file) => (
+          <div key={file.id} className="file-card">
+            <div className="file-icon">📄</div>
+            <div className="file-name">{file.Name}</div>
+            <div className="file-visibility">
+              {file.Visibility ? '🌐 Public' : '🔒 Private'}
+            </div>
+            <div className="file-actions">
+              <button
+                onClick={() => toggleFavorite(file.id)}
+                className="btn btn-secondary btn-small"
+              >
+                ❌ Remove Favorite
+              </button>
+              <button
+                onClick={() => window.open(`http://localhost:9222/api/files/download/${file.id}`, '_blank')}
+                className="btn btn-primary btn-small"
+              >
+                Download
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ user, userType }) {
+  const navigate = useNavigate();
   const [folders, setFolders] = useState([]);
   const [files, setFiles] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [showCreateFolder, setShowCreateFolder] = useState(false);
   const [showUploadFile, setShowUploadFile] = useState(false);
   const [showEditFolder, setShowEditFolder] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const [folderName, setFolderName] = useState('');
   const [folderVisibility, setFolderVisibility] = useState(true);
   const [folderGroupId, setFolderGroupId] = useState('');
-  
+
   const [editingFolder, setEditingFolder] = useState(null);
   const [editFolderName, setEditFolderName] = useState('');
   const [editFolderVisibility, setEditFolderVisibility] = useState(true);
-  
+
   const [fileName, setFileName] = useState('');
   const [fileVisibility, setFileVisibility] = useState(true);
   const [fileGroupId, setFileGroupId] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
-  
+
   const [availableGroups, setAvailableGroups] = useState([]);
 
-  // New state for Task/Progress/Feedback
+  // Task/Progress/Feedback state
   const [activeTab, setActiveTab] = useState('files');
   const [tasks, setTasks] = useState([]);
   const [checkedTasks, setCheckedTasks] = useState({});
@@ -63,6 +103,16 @@ function Dashboard({ user, userType, onLogout }) {
   const [previewFileName, setPreviewFileName] = useState('');
 
   useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const response = await fetch(`http://localhost:9222/api/favorites/${user.Gmail}`);
+        const data = await response.json();
+        setFavorites(data);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
+      }
+    };
+    fetchFavorites();
     loadFolders();
     if (userType === 'supervisor') {
       setAvailableGroups(user.groups || []);
@@ -79,7 +129,22 @@ function Dashboard({ user, userType, onLogout }) {
     }
   }, []);
 
-  // Existing functions
+const toggleFavorite = async (fileId) => {
+  try {
+    await fetch('http://localhost:9222/api/favorites/toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userEmail: user.Gmail, fileId }),
+    });
+
+    setFavorites((prev) =>
+      prev.includes(fileId) ? prev.filter((id) => id !== fileId) : [...prev, fileId]
+    );
+  } catch (error) {
+    console.error('Error toggling favorite:', error);
+  }
+};
+
   const loadFolders = async () => {
     try {
       const response = await getFolders(user.Gmail);
@@ -97,7 +162,6 @@ function Dashboard({ user, userType, onLogout }) {
       console.error('Error loading files:', error);
     }
   };
-
   const handleCreateFolder = async (e) => {
     e.preventDefault();
     try {
@@ -210,7 +274,6 @@ function Dashboard({ user, userType, onLogout }) {
   };
 
   const handleDownloadPreviewFile = (filePath) => {
-    // Extract filename from path and create download URL
     const fileName = filePath.split('\\').pop().split('/').pop();
     window.open(`http://localhost:9222/api/preview/download/${fileName}`, '_blank');
   };
@@ -234,14 +297,11 @@ function Dashboard({ user, userType, onLogout }) {
       }
     }
   };
-
   const handleFolderClick = (folder) => {
     setSelectedFolder(folder);
     loadFiles(folder.id);
   };
-
-  // New functions for Task/Progress/Feedback
-  const loadStudentTasks = async () => {
+const loadStudentTasks = async () => {
     try {
       const response = await getTasksByGroup(user.Group_id);
       setTasks(response.data);
@@ -346,6 +406,8 @@ function Dashboard({ user, userType, onLogout }) {
     }
   };
 
+  // ... (all other existing functions like handleCreateFolder, handleUploadFile, handleSearch, handleDeleteFolder, handleEditFolder, handleUpdateFolder, handleDownloadFile, handleDeleteFile, handleViewPreviewFile, handleDownloadPreviewFile, loadStudentTasks, handleCheckboxChange, handleAssignTask, loadProfessorWorks, handleSubmitFeedback, loadStudentFeedbacks, handleSubmitWork remain exactly the same)
+
   const percentage = tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0;
 
   return (
@@ -356,21 +418,32 @@ function Dashboard({ user, userType, onLogout }) {
           <h2>Research Management System</h2>
           <p>Welcome, {user.Name} ({userType})</p>
         </div>
-        <button onClick={onLogout} className="logout-btn">
-          Logout
-        </button>
       </div>
 
       {/* Navigation Tabs */}
       <div className="nav-tabs">
+        <button
+          onClick={() => navigate('/notepad')}
+          className="nav-tab"
+        >
+          📝 Notepad
+        </button>
+
         <button
           onClick={() => setActiveTab('files')}
           className={`nav-tab ${activeTab === 'files' ? 'active' : ''}`}
         >
           📁 Files & Folders
         </button>
+
         {userType === 'supervisor' ? (
           <>
+            <button
+              onClick={() => navigate('/notepad')}
+              className="nav-tab"
+            >
+              📝 Notepad
+            </button>
             <button
               onClick={() => setActiveTab('tasks')}
               className={`nav-tab ${activeTab === 'tasks' ? 'active' : ''}`}
@@ -404,6 +477,10 @@ function Dashboard({ user, userType, onLogout }) {
             >
               💬 View Feedback
             </button>
+            <button
+              onClick={() => navigate('/notepad')}
+              className="nav-tab"
+            ></button>
           </>
         )}
       </div>
@@ -453,19 +530,13 @@ function Dashboard({ user, userType, onLogout }) {
                       {folder.ownerEmail === user.Gmail && (
                         <div className="folder-actions">
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditFolder(folder);
-                            }}
+                            onClick={(e) => { e.stopPropagation(); handleEditFolder(folder); }}
                             className="btn btn-primary btn-small"
                           >
                             Edit
                           </button>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteFolder(folder.id);
-                            }}
+                            onClick={(e) => { e.stopPropagation(); handleDeleteFolder(folder.id); }}
                             className="btn btn-danger btn-small"
                           >
                             Delete
@@ -491,9 +562,14 @@ function Dashboard({ user, userType, onLogout }) {
                           </div>
                           <div className="file-actions">
                             <button
-                              onClick={() => handleDownloadFile(file.id)}
+                              onClick={() => toggleFavorite(file.id)}
+                              className="btn btn-secondary btn-small"
+                            >
+                              {favorites.includes(file.id) ? '⭐ Unfavorite' : '⭐ Favorite'}
+                            </button>
+                            <button
+                              onClick={() => window.open(`http://localhost:9222/api/files/download/${file.id}`, '_blank')}
                               className="btn btn-primary btn-small"
-                              style={{ flex: 1 }}
                             >
                               Download
                             </button>
@@ -501,7 +577,6 @@ function Dashboard({ user, userType, onLogout }) {
                               <button
                                 onClick={() => handleDeleteFile(file.id)}
                                 className="btn btn-danger btn-small"
-                                style={{ flex: 1 }}
                               >
                                 Delete
                               </button>
@@ -510,6 +585,9 @@ function Dashboard({ user, userType, onLogout }) {
                         </div>
                       ))}
                     </div>
+
+                    {/* Favorites Section */}
+                    <Favorites files={files} favorites={favorites} toggleFavorite={toggleFavorite} />
                   </>
                 ) : (
                   <div className="empty-state">

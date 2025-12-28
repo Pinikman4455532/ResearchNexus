@@ -106,4 +106,53 @@ export const loginStudent = (credentials) =>
 export const loginSupervisor = (credentials) => 
   api.post('/auth/supervisor/login', credentials);
 
+// Profile APIs
+//shagupta
+export const getProfile = (email, userType) =>
+  api.get('/profile', { params: { email, userType } });
+
+export const updateProfile = (data) =>
+  api.put('/profile/update', data);
+
+
+
+
+// ============= NOTEPAD APIs =============
+export const getNotePads = (userEmail) =>
+  api.get('/notepads', { params: { email: userEmail } });
+
+export const createNotePad = (formData, config) =>
+  api.post('/notepads', formData, config);
+
+export const updateNotePad = (id, data) =>
+  api.put(`/notepads/${id}`, data);
+
+export const deleteNotePad = (id) =>
+  api.delete(`/notepads/${id}`);
+
+// For file upload
+export const uploadDocument = (formData) =>
+  api.post('/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+
+
+  // ⭐ FAVORITES APIs
+export const addFavorite = (fileId, userEmail) =>
+  api.post('/favorites', { fileId, userEmail });
+
+export const removeFavorite = (fileId, userEmail) =>
+  api.delete('/favorites', { data: { fileId, userEmail } });
+
+export const getFavorites = (userEmail) =>
+  api.get('/favorites', { params: { userEmail } });
+
+// ============= ANNOUNCEMENT / DEADLINE APIs =============
+export const getAnnouncements = () =>
+  api.get('/announcements');
+
+export const createAnnouncement = (announcementData) =>
+  api.post('/announcements/create', announcementData);
+
 export default api;

@@ -4,6 +4,7 @@ const File = require('../models/File');
 const Folder = require('../models/Folder');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 // Multer Configuration
 const storage = multer.diskStorage({
@@ -11,7 +12,8 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    // Keep original file name
+    cb(null, file.originalname);
   }
 });
 
@@ -23,6 +25,25 @@ exports.uploadFile = async (req, res) => {
     const { Name, Folder: folderId, Visibility, ownerEmail } = req.body;
     const filePath = req.file.path;
 
+    // Check if a file with the same name exists in the folder
+    const existingFile = await File.findOne({ Name, Folder: parseInt(folderId) });
+    if (existingFile) {
+      // Delete old file from storage
+      if (fs.existsSync(existingFile.filePath)) {
+        fs.unlinkSync(existingFile.filePath);
+      }
+
+      // Delete old file record
+      await File.deleteOne({ id: existingFile.id });
+
+      // Decrement folder file count
+      await Folder.findOneAndUpdate(
+        { id: parseInt(folderId) },
+        { $inc: { File: -1 } }
+      );
+    }
+
+    // Create new file record
     const lastFile = await File.findOne().sort({ id: -1 });
     const newId = lastFile ? lastFile.id + 1 : 1;
 
@@ -37,7 +58,7 @@ exports.uploadFile = async (req, res) => {
 
     await newFile.save();
 
-    // Update folder file count
+    // Increment folder file count
     await Folder.findOneAndUpdate(
       { id: parseInt(folderId) },
       { $inc: { File: 1 } }
@@ -93,17 +114,27 @@ exports.deleteFile = async (req, res) => {
     const { id } = req.params;
 
     const file = await File.findOne({ id: parseInt(id) });
-    
+    if (!file) return res.status(404).json({ message: 'File not found' });
+
+    // Delete file from storage
+    if (fs.existsSync(file.filePath)) {
+      fs.unlinkSync(file.filePath);
+    }
+
+    // Decrement folder file count
     await Folder.findOneAndUpdate(
       { id: file.Folder },
       { $inc: { File: -1 } }
     );
 
+    // Delete file record
     await File.findOneAndDelete({ id: parseInt(id) });
+
     res.status(200).json({ message: 'File deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// Export Multer upload middleware
 exports.upload = upload;

@@ -1,0 +1,147 @@
+/* NotePad.css */
+
+/* Body background and centering */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #e0f0ff; /* light blueish background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Main container box */
+.notepad-container {
+  background-color: #68a0ce; /* slightly lighter blue */
+  padding: 30px;
+  border-radius: 15px;
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Title */
+.notepad-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #0059b3;
+}
+
+/* Form styling */
+.notepad-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.notepad-form input[type="text"],
+.notepad-form input[type="file"],
+.notepad-form textarea {
+  padding: 10px;
+  border: 1px solid #b3d1ff;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.notepad-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Submit button */
+.notepad-form button {
+  padding: 10px;
+  background-color: #3399ff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.notepad-form button:hover {
+  background-color: #0066cc;
+}
+
+/* Notes list section */
+.notepad-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Each note entry box */
+.notepad-entry {
+  background-color: #b9d1f5;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Note title */
+.notepad-entry h4 {
+  margin: 0 0 10px 0;
+  color: #003366;
+}
+
+/* Document link */
+.notepad-entry a {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #0059b3;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.notepad-entry a:hover {
+  text-decoration: underline;
+}
+
+/* Editable note textarea */
+.notepad-entry textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #99c2ff;
+  resize: vertical;
+  margin-bottom: 5px;
+  white-space: pre-wrap; /* preserve line breaks while editing */
+  word-wrap: break-word;
+}
+/* Note text */
+.notepad-entry p {
+    color :#dcecfc;
+  background-color: #21242c;
+  padding: 8px;
+  border-radius: 8px;
+  max-height: 100px;
+  overflow-y: auto; /* scroll vertically if too long */
+  white-space: pre-wrap; /* preserve line breaks and wrap text */
+  word-wrap: break-word; /* break long words to fit container */
+}
+
+/* Edit/Delete buttons */
+.notepad-entry button {
+  padding: 5px 10px;
+  margin-right: 5px;
+  background-color: #3399ff;
+  color: rgb(255, 230, 230);
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.notepad-entry button:hover {
+  background-color: #0066cc;
+}
